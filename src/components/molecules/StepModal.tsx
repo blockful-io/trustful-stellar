@@ -112,11 +112,16 @@ export const StepModal: React.FC<ModalProps> = ({
 
   const [selectedAvatar, setSelectedAvatar] = useState<string>('');
   const [selectedBadge, setSelectedBadge] = useState<string>('');
+  const [badgeCount, setBadgeCount] = useState<number>(3);
 
   useEffect(() => {
     setValue('avatar', selectedAvatar);
     setValue('badgeType', selectedBadge);
   }, [selectedAvatar, selectedBadge, setValue]);
+
+  const addNewBadge = () => {
+    setBadgeCount(prevCount => prevCount + 1);
+  };
 
   const onSubmit = async (data: CreateCommunityForm) => {
     try {
@@ -339,9 +344,8 @@ export const StepModal: React.FC<ModalProps> = ({
                     <button
                       key={id}
                       onClick={() => setSelectedAvatar(id)}
-                      className={`p-3 rounded-full bg-whiteOpacity005 hover:bg-gray-600 transition-colors ${
-                        selectedAvatar === id ? 'ring-2 ring-brandGreen' : ''
-                      }`}
+                      className={`p-3 rounded-full bg-whiteOpacity005 hover:bg-gray-600 transition-colors ${selectedAvatar === id ? 'ring-2 ring-brandGreen' : ''
+                        }`}
                     >
                       {icon}
                     </button>
@@ -388,7 +392,7 @@ export const StepModal: React.FC<ModalProps> = ({
               </p>
             </div>
             <CustomHR />
-            {[1, 2, 3].map(num => (
+            {Array.from({ length: badgeCount }, (_, i) => i + 1).map(num => (
               <React.Fragment key={`badge-${num}`}>
                 <div className="flex w-full justify-between items-center">
                   <div>
@@ -414,9 +418,18 @@ export const StepModal: React.FC<ModalProps> = ({
                     </button>
                   </div>
                 </div>
-                {num < 6 && <CustomHR />}
+                {num < badgeCount && <CustomHR />}
               </React.Fragment>
             ))}
+            {selectedBadge === 'custom' && (
+              <button
+                type="button"
+                onClick={addNewBadge}
+                className="mt-4 flex flex-row items-center gap-2 text-sm text-whiteOpacity05"
+              >
+                <PlusIcon className="text-whiteOpacity05" /> New badge
+              </button>
+            )}
           </div>
         );
       case 3:

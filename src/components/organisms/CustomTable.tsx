@@ -5,6 +5,7 @@ import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { PlusIcon } from '../atoms';
 import useCommunitiesController from '../community/hooks/controller';
 import { useStellarContractBadge } from '@/lib/stellar/transactions/hooks/useStellarContractBadge';
+import { toast } from 'react-hot-toast';
 
 export interface CustomTableProps<T extends Record<string, any>>
   extends React.ComponentPropsWithoutRef<'div'> {
@@ -77,23 +78,25 @@ export const CustomTable = <T extends Record<string, any>>({
   }, [newBadgeData, isDisabled]);
 
   const handleRemoveBadge = async (badge: any) => {
-    console.log(badge);
+    try {
+      const result = await stellarContractBadges.removeBadge(
+        badge.name,
+        badge.issuer,
+        badge.score
+      );
 
-    // const nameBadge = 'SQL0280';
-    // const issuer = 'GCPZPQYGG3QBIRA5ZIKLD3WQWFGESFA453TUXHRMP7NZYTTERIK2CXGE';
-    // const score = 5;
-
-    // const result = await stellarContractBadges.removeBadge(
-    //   nameBadge,
-    //   issuer,
-    //   score
-    // );
-
-    // if (result.success) {
-    //   console.log('Transaction successful:', result.txHash);
-    // } else {
-    //   console.error('Transaction failed:', result.error);
-    // }
+      if (result.success) {
+        console.log('Transaction successful:', result.txHash);
+        toast.success('Badge removed successfully');
+        // You might want to refresh the badges list here
+      } else {
+        console.error('Transaction failed:', result.error);
+        toast.error('Failed to remove badge');
+      }
+    } catch (error) {
+      console.error('Error removing badge:', error);
+      toast.error('Error removing badge');
+    }
   };
 
   return (
